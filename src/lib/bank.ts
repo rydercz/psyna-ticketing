@@ -1,6 +1,7 @@
-import { format, parse } from "https://deno.land/std@0.182.0/datetime/mod.ts";
-import secrets from "./secrets.json" assert { type: "json" };
+import { format, parse } from "date-fns";
 import { delay } from "./utils.ts";
+
+import secrets from "../../secrets.json" assert { type: "json" };
 
 interface BankResponse {
   accountStatement: {
@@ -67,7 +68,7 @@ export const fetchTransactions = async (
 
     return body.accountStatement.transactionList.transaction.map((data) => ({
       transactionId: +data[Col.transactionId].value,
-      date: parse(String(data[Col.date].value).slice(0, 10), "yyyy-MM-dd"),
+      date: parse(String(data[Col.date].value).slice(0, 10), "yyyy-MM-dd", new Date()),
       amount: +data[Col.amount].value,
       currency: "" + data[Col.currency].value,
       variableSymbol: +data[Col.variableSymbol]?.value,

@@ -1,4 +1,4 @@
-import hashJs from "npm:hash.js";
+import hashJs from "hash.js";
 const { sha256 } = hashJs;
 
 export const mapOpt = <S, T>(

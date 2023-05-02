@@ -27,5 +27,11 @@
 		"typescript": "^5.0.0",
 		"vite": "^4.3.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@types/google-spreadsheet": "^3.3.1",
+		"date-fns": "^2.30.0",
+		"google-spreadsheet": "^3.3.0",
+		"hash.js": "^1.1.7"
+	}
 }

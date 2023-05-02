@@ -4,6 +4,8 @@
 		"allowJs": true,
 		"checkJs": true,
 		"esModuleInterop": true,
+		"moduleResolution": "nodenext",
+		"allowImportingTsExtensions": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,

@@ -1,12 +1,12 @@
-// @deno-types="npm:@types/google-spreadsheet@3.3.1"
 import {
   GoogleSpreadsheet,
   GoogleSpreadsheetRow,
-} from "npm:google-spreadsheet@3.3.0";
+} from "google-spreadsheet";
 
-import secrets from "./secrets.json" assert { type: "json" };
 import { generateSymbol, mapOpt } from "./utils.ts";
-import { Transaction } from "./bank.ts";
+import type { Transaction } from "./bank.ts";
+
+import secrets from "../../secrets.json" assert { type: "json" };
 
 const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 await doc.useServiceAccountAuth(secrets.serviceAccountKey);
