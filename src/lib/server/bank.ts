@@ -1,7 +1,7 @@
 import { format, parse } from "date-fns";
-import { delay } from "./utils.ts";
+import { delay } from "$lib/utils.ts";
 
-import secrets from "../../secrets.json" assert { type: "json" };
+import secrets from "$lib/server/secrets.json" assert { type: "json" };
 
 interface BankResponse {
   accountStatement: {

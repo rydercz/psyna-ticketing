@@ -3,10 +3,10 @@ import {
   GoogleSpreadsheetRow,
 } from "google-spreadsheet";
 
-import { generateSymbol, mapOpt } from "./utils.ts";
+import { generateSymbol, mapOpt } from "$lib/utils.ts";
 import type { Transaction } from "./bank.ts";
 
-import secrets from "../../secrets.json" assert { type: "json" };
+import secrets from "$lib/server/secrets.json" assert { type: "json" };
 
 const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 await doc.useServiceAccountAuth(secrets.serviceAccountKey);
