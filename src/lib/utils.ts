@@ -18,7 +18,7 @@ export const generateSymbol = (
 
   do {
     seeds.forEach((s) => crypt.update(String(s)));
-    hash = Number(BigInt("0x" + crypt.digest("hex")) % 10_000_000_000n);
+    hash = Number(BigInt("0x" + crypt.digest("hex")) % 1_00_00_00n);
   } while (!isValid(hash));
 
   return hash;
