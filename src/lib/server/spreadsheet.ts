@@ -91,7 +91,7 @@ const clearTransactionRows = async () => {
 };
 
 /** @returns the generated unique variable symbol */
-export const newPayment = async (user: UserInfo): Promise<number> => {
+export const newPurchase = async (user: UserInfo): Promise<number> => {
   const usedSymbols = await getUsedVariableSymbols();
   const vs = generateSymbol(
     [user.jmeno, user.email, user.adresa],
