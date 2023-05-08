@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types.d.ts';
 
 export const load = ((event) => {
-    console.log('loaded')
+    event.url.searchParams.get('vs');
 }) satisfies PageServerLoad;

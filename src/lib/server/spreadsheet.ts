@@ -24,7 +24,7 @@ interface PurchaseEntry extends UserInfo {
 	id_transakce?: number;
 	zaplaceno?: number;
 	pouzito?: number;
-	vstupenka_hash?: string;
+	vstupenky_hash?: string[];
 }
 interface TransactionEntry {
 	id_transakce: number;
@@ -37,6 +37,7 @@ interface TransactionEntry {
 
 const emptyToUndefined = (x: string): string | undefined => (x === '' ? undefined : x);
 const toOptNum = (x: string) => mapOpt(emptyToUndefined(x), (x) => +x);
+const toStrArr = (x: string) => x.split(',').map(s => s.trim()).filter(s => s !== '');
 
 const getPurchaseRows = async (): Promise<PurchaseEntry[]> => {
 	const rows = await purchaseSheet.getRows();
@@ -50,7 +51,7 @@ const getPurchaseRows = async (): Promise<PurchaseEntry[]> => {
 		id_transakce: toOptNum(r['id_transakce']),
 		zaplaceno: toOptNum(r['zaplaceno']),
 		pouzito: toOptNum(r['pouzito']),
-		vstupenka_hash: emptyToUndefined(r['vstupenka_hash'])
+		vstupenky_hash: toStrArr(r['vstupenky_hash'])
 	}));
 };
 
@@ -66,7 +67,10 @@ export const generateUuid = async () => {
 	return uuid;
 };
 
-const addPurchaseRow = (entry: Readonly<PurchaseEntry>) => purchaseSheet.addRow(entry);
+const addPurchaseRow = (entry: Readonly<PurchaseEntry>) => purchaseSheet.addRow({
+	...entry,
+	vstupenky_hash: entry.vstupenky_hash?.join(', ') ?? '',
+});
 
 const modifyPurchaseRow = async (
 	which: Partial<Readonly<PurchaseEntry>>,
@@ -126,5 +130,3 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 
 	// TODO
 };
-
-// await newPayment({ jmeno: "Blbal", adresa: "Tupá 21", email: "asdf@fdsa.asdf" })
