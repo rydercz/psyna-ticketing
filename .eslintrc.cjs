@@ -26,5 +26,8 @@ module.exports = {
 				parser: '@typescript-eslint/parser'
 			}
 		}
-	]
+	],
+	rules: {
+		"no-empty": "off"
+	}
 };

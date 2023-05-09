@@ -40,7 +40,8 @@ export const actions = {
 			});
 		}
 
-		const vs = await newPurchase(form.data.uuid, {
+		const uuid = form.data.uuid;
+		const vs = await newPurchase(uuid, {
 			jmeno: form.data.name,
 			adresa: `${form.data.street}\n${form.data.zip} ${form.data.city}`,
 			email: form.data.email
@@ -48,6 +49,6 @@ export const actions = {
 			throw redirect(303, `/?error=uuid-mismatch`);
 		});
 
-		throw redirect(303, `/purchase/2?vs=${vs}`);
+		throw redirect(303, `/purchase/2?vs=${vs}&uuid=${uuid}`);
 	}
 } satisfies Actions;

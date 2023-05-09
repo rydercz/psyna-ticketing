@@ -2,6 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import type { PageData } from './$types.js';
+	import { updateTicket } from '$lib/client/tickets.ts';
 
 	export let data: PageData;
 
@@ -13,11 +14,19 @@
 	});
 
 	$: $form.uuid = data.uuid;
+
+	const onSubmit = () => {
+		updateTicket({
+			uuid: $form.uuid,
+			name: $form.name,
+			email: $form.email,
+		});
+	};
 </script>
 
 <SuperDebug data={$form} />
 
-<form method="post" use:enhance>
+<form method="post" use:enhance on:submit={onSubmit}>
 	<input type="hidden" name="uuid" value={data.uuid} />
 	<label>
 		Jméno a příjmení
