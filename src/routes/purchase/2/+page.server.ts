@@ -1,6 +1,6 @@
 import { generatePaymentQR } from '$lib/utils.ts';
 import type { PageServerLoad } from './$types.d.ts';
-import secrets from '$lib/server/secrets.json' assert { type: 'json' };
+import secrets from '$lib/server/secrets.ts';
 import { fail } from '@sveltejs/kit';
 
 export const load = (async (event) => {
@@ -13,5 +13,5 @@ export const load = (async (event) => {
 		vs
 	});
 
-    return { qr };
+	return { qr };
 }) satisfies PageServerLoad;

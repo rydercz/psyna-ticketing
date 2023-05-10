@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { generateSymbol, mapOpt } from '$lib/utils.ts';
 import type { Transaction } from './bank.ts';
 
-import secrets from '$lib/server/secrets.json' assert { type: 'json' };
+import secrets from '$lib/server/secrets.ts';
 
 const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 await doc.useServiceAccountAuth(secrets.serviceAccountKey);
@@ -37,7 +37,11 @@ interface TransactionEntry {
 
 const emptyToUndefined = (x: string): string | undefined => (x === '' ? undefined : x);
 const toOptNum = (x: string) => mapOpt(emptyToUndefined(x), (x) => +x);
-const toStrArr = (x: string) => x.split(',').map(s => s.trim()).filter(s => s !== '');
+const toStrArr = (x: string) =>
+	x
+		.split(',')
+		.map((s) => s.trim())
+		.filter((s) => s !== '');
 
 const getPurchaseRows = async (): Promise<PurchaseEntry[]> => {
 	const rows = await purchaseSheet.getRows();
@@ -67,10 +71,11 @@ export const generateUuid = async () => {
 	return uuid;
 };
 
-const addPurchaseRow = (entry: Readonly<PurchaseEntry>) => purchaseSheet.addRow({
-	...entry,
-	vstupenky_hash: entry.vstupenky_hash?.join(', ') ?? '',
-});
+const addPurchaseRow = (entry: Readonly<PurchaseEntry>) =>
+	purchaseSheet.addRow({
+		...entry,
+		vstupenky_hash: entry.vstupenky_hash?.join(', ') ?? ''
+	});
 
 const modifyPurchaseRow = async (
 	which: Partial<Readonly<PurchaseEntry>>,
@@ -107,16 +112,17 @@ export const newPurchase = async (uuid: string, user: UserInfo): Promise<number>
 	const rows = await getPurchaseRows();
 	const usedSymbols = new Set(rows.map((r) => r.variabilni_symbol));
 
-  const rowWithSameUuid = rows.find(row => row.uuid === uuid);
-  if (rowWithSameUuid) {
+	const rowWithSameUuid = rows.find((row) => row.uuid === uuid);
+	if (rowWithSameUuid) {
 		console.log(uuid, rowWithSameUuid);
-    if (
-      user.jmeno === rowWithSameUuid.jmeno &&
-      user.adresa === rowWithSameUuid.adresa &&
-      user.email === rowWithSameUuid.email
-    ) return rowWithSameUuid.variabilni_symbol;
-    else throw Error(`UUID conflict: ${uuid}`);
-  }
+		if (
+			user.jmeno === rowWithSameUuid.jmeno &&
+			user.adresa === rowWithSameUuid.adresa &&
+			user.email === rowWithSameUuid.email
+		)
+			return rowWithSameUuid.variabilni_symbol;
+		else throw Error(`UUID conflict: ${uuid}`);
+	}
 
 	const vs = generateSymbol([user.jmeno, user.email, user.adresa], (s) => !usedSymbols.has(s));
 	await addPurchaseRow({ uuid, ...user, vytvoreno: Date.now(), variabilni_symbol: vs });
