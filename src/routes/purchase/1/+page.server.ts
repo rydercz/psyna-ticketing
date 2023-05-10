@@ -41,7 +41,8 @@ export const actions = {
 		}
 
 		const uuid = form.data.uuid;
-		const vs = await newPurchase(uuid, {
+		const ticketCount = form.data.ticketCount;
+		const { vs, price } = await newPurchase(uuid, ticketCount, {
 			jmeno: form.data.name,
 			adresa: `${form.data.street}\n${form.data.zip} ${form.data.city}`,
 			email: form.data.email

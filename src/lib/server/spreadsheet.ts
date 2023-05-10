@@ -1,10 +1,11 @@
 import { GoogleSpreadsheet, GoogleSpreadsheetRow } from 'google-spreadsheet';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, validate as isValidUuid } from 'uuid';
 
 import { generateSymbol, mapOpt } from '$lib/utils.ts';
 import type { Transaction } from './bank.ts';
 
 import secrets from '$lib/server/secrets.ts';
+import { z } from 'zod';
 
 const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 await doc.useServiceAccountAuth(secrets.serviceAccountKey);
@@ -19,11 +20,15 @@ export interface UserInfo {
 }
 interface PurchaseEntry extends UserInfo {
 	uuid: string;
+
 	vytvoreno: number;
-	variabilni_symbol: number;
-	id_transakce?: number;
 	zaplaceno?: number;
 	pouzito?: number;
+
+	cena: number;
+	pocet_vstupenek: number;
+	variabilni_symbol: number;
+	id_transakce?: number;
 	vstupenky_hash?: string[];
 }
 interface TransactionEntry {
@@ -47,17 +52,28 @@ const getPurchaseRows = async (): Promise<PurchaseEntry[]> => {
 	const rows = await purchaseSheet.getRows();
 	return rows.map((r) => ({
 		uuid: r['uuid'],
+
 		jmeno: r['jmeno'],
 		email: r['email'],
 		adresa: r['adresa'],
+
 		vytvoreno: +r['vytvoreno'],
-		variabilni_symbol: +r['variabilni_symbol'],
-		id_transakce: toOptNum(r['id_transakce']),
 		zaplaceno: toOptNum(r['zaplaceno']),
 		pouzito: toOptNum(r['pouzito']),
+
+		cena: +r['cena'],
+		pocet_vstupenek: +r['pocet_vstupenek'],
+		variabilni_symbol: +r['variabilni_symbol'],
+		id_transakce: toOptNum(r['id_transakce']),
 		vstupenky_hash: toStrArr(r['vstupenky_hash'])
 	}));
 };
+
+export const getPurchaseByUuid = async (uuid: string): Promise<PurchaseEntry | undefined> => {
+	if (!isValidUuid(uuid)) return undefined;
+	const rows = await getPurchaseRows();
+	return rows.find(row => row.uuid === uuid);
+}
 
 export const generateUuid = async () => {
 	const rows = await purchaseSheet.getRows();
@@ -108,7 +124,13 @@ const clearTransactionRows = async () => {
  * @returns the generated unique variable symbol
  * @throws on UUID conflict
  */
-export const newPurchase = async (uuid: string, user: UserInfo): Promise<number> => {
+export const newPurchase = async (
+	uuid: string,
+	ticketCount: number,
+	user: UserInfo
+): Promise<{ vs: number; price: number }> => {
+	z.number().int().positive().parse(ticketCount);
+
 	const rows = await getPurchaseRows();
 	const usedSymbols = new Set(rows.map((r) => r.variabilni_symbol));
 
@@ -120,14 +142,25 @@ export const newPurchase = async (uuid: string, user: UserInfo): Promise<number>
 			user.adresa === rowWithSameUuid.adresa &&
 			user.email === rowWithSameUuid.email
 		)
-			return rowWithSameUuid.variabilni_symbol;
+			return {
+				vs: rowWithSameUuid.variabilni_symbol,
+				price: rowWithSameUuid.cena
+			};
 		else throw Error(`UUID conflict: ${uuid}`);
 	}
 
 	const vs = generateSymbol([user.jmeno, user.email, user.adresa], (s) => !usedSymbols.has(s));
-	await addPurchaseRow({ uuid, ...user, vytvoreno: Date.now(), variabilni_symbol: vs });
+	const price = secrets.ticketPrice * ticketCount;
+	await addPurchaseRow({
+		uuid,
+		...user,
+		pocet_vstupenek: ticketCount,
+		cena: price,
+		vytvoreno: Date.now(),
+		variabilni_symbol: vs
+	});
 
-	return vs;
+	return { vs, price };
 };
 
 export const matchTransactions = async (transactions: Transaction[]) => {

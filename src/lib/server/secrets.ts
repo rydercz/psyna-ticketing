@@ -16,7 +16,8 @@ const secretsSchema = z.object({
 	}),
 	bankToken: z.string(),
 	iban: z.string(),
-	accountNumber: z.string()
+	accountNumber: z.string(),
+	ticketPrice: z.number().gt(0),
 });
 
 if (!process.env.secrets) throw Error('Please set the `secrets` env var.');

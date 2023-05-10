@@ -1,9 +1,31 @@
 <script lang="ts">
-	import type { PageData } from "./$types.d.ts";
+	import type { PageData } from './$types.d.ts';
 
 	export let data: PageData;
 </script>
 
-Yo!
+<h3>Instrukce pro platbu</h3>
+<p>
+	<img src={data.qr} alt="" />
+</p>
+<table>
+	<tr>
+		<td class=strong>Číslo účtu:</td>
+		<td>{data.accountNumber}</td>
+	</tr>
+	<tr>
+		<td class=strong>Částka:</td>
+		<td>{data.amount?.toFixed(0)},– Kč</td>
+	</tr>
+	<tr>
+		<td class=strong>Variabilní symbol:</td>
+		<td>{data.vs}</td>
+	</tr>
+</table>
 
-<img src={data.qr} alt="" />
+<style lang="scss">
+	.strong {
+		font-weight: bold;
+		padding-right: 1em;
+	}
+</style>
