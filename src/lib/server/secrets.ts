@@ -19,5 +19,5 @@ const secretsSchema = z.object({
 	accountNumber: z.string()
 });
 
-if (!process.env.secrets) throw Error('Please set the `secret` env var.');
+if (!process.env.secrets) throw Error('Please set the `secrets` env var.');
 export default secretsSchema.parse(JSON.parse(process.env.secrets));
