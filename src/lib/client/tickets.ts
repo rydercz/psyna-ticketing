@@ -6,7 +6,7 @@ const ticketSchema = z.object({
 	name: z.string().optional(),
 	email: z.string().email().optional(),
 	vs: z.string().optional(),
-	hashes: z.string().array().optional(),
+	hashes: z.string().array().optional()
 });
 
 export type Ticket = z.infer<typeof ticketSchema>;
@@ -31,19 +31,27 @@ export const tickets: Readable<Readonly<Ticket[]>> = {
 		s(getTickets());
 		return () => _subscribers.delete(s);
 	}
-}
+};
 
 const _setTickets = (ts: Ticket[]) => {
 	localStorage.setItem('tickets', JSON.stringify(ts));
-	_subscribers.forEach(s => s(ts));
-}
+	_subscribers.forEach((s) => s(ts));
+};
 
 export const updateTicket = (t: Ticket) => {
-	const ts = new Map(getTickets().map(t => [t.uuid, t]));
+	const ts = new Map(getTickets().map((t) => [t.uuid, t]));
 
-	const ticket = {
-		...ts.get(t.uuid),
-		...t
+	const former = ts.get(t.uuid);
+	const latter = t;
+	const hashes =
+		former?.hashes || latter.hashes
+			? [...new Set([...(former?.hashes ?? []), ...(t.hashes ?? [])])]
+			: undefined;
+
+	const ticket: Ticket = {
+		...former,
+		...latter,
+		hashes
 	};
 	ts.set(t.uuid, ticket);
 
