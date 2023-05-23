@@ -22,6 +22,11 @@ export const generateSymbol = (
 	return hash;
 };
 
+export const pickRandomItem = <T>(arr: T[]): T => {
+	if (arr.length === 0) throw new TypeError('Cannot pick item from empty array');
+	return arr[Math.floor(Math.random() * arr.length)];
+}
+
 export const parseIban = (iban: string): string => {
 	iban = iban.replaceAll(/\s+/g, '').toUpperCase();
 
@@ -39,8 +44,19 @@ export const parseIban = (iban: string): string => {
 	return iban;
 };
 
-export const generatePaymentQR = ({ iban, amount, vs }: { iban: string, amount: number, vs: number }) => {
-  iban = parseIban(iban);
-  const str = `SPD*1.0*ACC:${iban}*AM:${amount.toFixed(2)}*CC:CZK*PT:IP*X-VS:${vs}`;
-  return toDataURL(str)
-}
+export const generatePaymentQR = ({
+	iban,
+	amount,
+	vs
+}: {
+	iban: string;
+	amount: number;
+	vs: number;
+}) => {
+	iban = parseIban(iban);
+	const str = `SPD*1.0*ACC:${iban}*AM:${amount.toFixed(2)}*CC:CZK*PT:IP*X-VS:${vs}`;
+	return toDataURL(str);
+};
+
+export const setMinus = <T>(a: Set<T>, b: Set<T>): Set<T> =>
+	new Set([...a].filter((_) => !b.has(_)));

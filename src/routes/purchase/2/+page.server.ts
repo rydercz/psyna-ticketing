@@ -20,6 +20,7 @@ export const load = (async (event) => {
 	});
 
 	return {
+		uuid,
 		accountNumber: secrets.accountNumber,
 		amount,
 		qr,

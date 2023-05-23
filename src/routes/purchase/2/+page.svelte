@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { updateTicket } from '$lib/client/tickets.ts';
 	import type { PageData } from './$types.d.ts';
 
 	export let data: PageData;
+
+	$: {
+		const { uuid, vs } = data;
+		if (uuid && browser) updateTicket({ uuid, vs: String(vs) });
+	}
 </script>
 
 <h3>Instrukce pro platbu</h3>
@@ -10,15 +17,15 @@
 </p>
 <table>
 	<tr>
-		<td class=strong>Číslo účtu:</td>
+		<td class="strong">Číslo účtu:</td>
 		<td>{data.accountNumber}</td>
 	</tr>
 	<tr>
-		<td class=strong>Částka:</td>
+		<td class="strong">Částka:</td>
 		<td>{data.amount?.toFixed(0)},– Kč</td>
 	</tr>
 	<tr>
-		<td class=strong>Variabilní symbol:</td>
+		<td class="strong">Variabilní symbol:</td>
 		<td>{data.vs}</td>
 	</tr>
 </table>

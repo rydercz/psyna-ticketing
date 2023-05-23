@@ -3,6 +3,7 @@ import { superValidate } from 'sveltekit-superforms/server';
 import type { PageServerLoad, Actions } from '../$types.js';
 import { fail, redirect } from '@sveltejs/kit';
 import { generateUuid, newPurchase } from '$lib/server/spreadsheet.ts';
+import secrets from '$lib/server/secrets.ts';
 
 const formSchema = z.object({
 	uuid: z.string().uuid('Nečekaná chyba, prosím znovu načtěte stránku'),
@@ -24,9 +25,12 @@ const formSchema = z.object({
 export const load = (async (event) => {
 	const form = await superValidate(event, formSchema);
 	const uuid = await generateUuid();
+	const ticketPrice = secrets.ticketPrice;
+
 	return {
 		uuid,
-		form
+		form,
+		ticketPrice
 	};
 }) satisfies PageServerLoad;
 

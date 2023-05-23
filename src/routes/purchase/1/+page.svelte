@@ -24,7 +24,7 @@
 	};
 </script>
 
-<SuperDebug data={$form} />
+<!-- <SuperDebug data={$form} /> -->
 
 <form method="post" use:enhance on:submit={onSubmit}>
 	<input type="hidden" name="uuid" value={data.uuid} />
@@ -64,7 +64,7 @@
 		<small>{$errors.ticketCount ?? ''}</small>
 	</label>
 	<span>
-    {$form.ticketCount * 100},– Kč
+    {$form.ticketCount * data.ticketPrice},– Kč
 		<button>Koupit!</button>
 	</span>
 </form>

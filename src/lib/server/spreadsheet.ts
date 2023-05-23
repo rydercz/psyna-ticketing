@@ -1,11 +1,12 @@
-import { GoogleSpreadsheet, GoogleSpreadsheetRow } from 'google-spreadsheet';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { v4 as uuidv4, validate as isValidUuid } from 'uuid';
 
-import { generateSymbol, mapOpt } from '$lib/utils.ts';
+import { generateSymbol, mapOpt, setMinus } from '$lib/utils.ts';
 import type { Transaction } from './bank.ts';
 
 import secrets from '$lib/server/secrets.ts';
 import { z } from 'zod';
+import { generujNJmen } from '$lib/jmena.ts';
 
 const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 await doc.useServiceAccountAuth(secrets.serviceAccountKey);
@@ -40,11 +41,11 @@ interface TransactionEntry {
 	jmeno: string;
 }
 
-const emptyToUndefined = (x: string): string | undefined => (x === '' ? undefined : x);
-const toOptNum = (x: string) => mapOpt(emptyToUndefined(x), (x) => +x);
-const toStrArr = (x: string) =>
+const emptyToUndefined = (x: string | undefined): string | undefined => (x === '' ? undefined : x);
+const toOptNum = (x: string | undefined) => mapOpt(emptyToUndefined(x), (x) => +x);
+const toStrArr = (x: string | undefined) =>
 	x
-		.split(',')
+		?.split(',')
 		.map((s) => s.trim())
 		.filter((s) => s !== '');
 
@@ -72,8 +73,8 @@ const getPurchaseRows = async (): Promise<PurchaseEntry[]> => {
 export const getPurchaseByUuid = async (uuid: string): Promise<PurchaseEntry | undefined> => {
 	if (!isValidUuid(uuid)) return undefined;
 	const rows = await getPurchaseRows();
-	return rows.find(row => row.uuid === uuid);
-}
+	return rows.find((row) => row.uuid === uuid);
+};
 
 export const generateUuid = async () => {
 	const rows = await purchaseSheet.getRows();
@@ -93,7 +94,7 @@ const addPurchaseRow = (entry: Readonly<PurchaseEntry>) =>
 		vstupenky_hash: entry.vstupenky_hash?.join(', ') ?? ''
 	});
 
-const modifyPurchaseRow = async (
+const updatePurchaseRow = async (
 	which: Partial<Readonly<PurchaseEntry>>,
 	edit: Partial<Readonly<PurchaseEntry>>
 ) => {
@@ -104,20 +105,35 @@ const modifyPurchaseRow = async (
 	if (row === undefined) throw new Error('Could not find the row');
 
 	for (const [key, value] of Object.entries(edit)) {
-		row[key] = value;
+		row[key] = Array.isArray(value) ? value.join(', ') : value;
 	}
 
 	await row.save();
 };
 
-const addTransactionRow = (entry: Readonly<TransactionEntry>) => transactionSheet.addRow(entry);
+const getTransactionRows = async (): Promise<TransactionEntry[]> => {
+	const rows = await transactionSheet.getRows();
+	return rows.map((r) => ({
+		id_transakce: +r['id_transakce'],
+		timestamp: +r['timestamp'],
+		castka: r['castka'],
+		variabilni_symbol: +r['variabilni_symbol'],
+		ucet: r['ucet'],
+		jmeno: r['jmeno']
+	}));
+};
 
-const clearTransactionRows = async () => {
-	let rows: GoogleSpreadsheetRow[];
-	do {
-		rows = await transactionSheet.getRows();
-		for (const r of rows.reverse()) await r.delete();
-	} while (rows.length > 0);
+const updateTransactionRows = async (transactions: Readonly<TransactionEntry>[]) => {
+	const rows = await transactionSheet.getRows();
+
+	const oldIds = new Set(rows.map((r) => +r['id_transakce']));
+	const newIds = new Set(transactions.map((t) => t.id_transakce));
+
+	const deleteIds = setMinus(oldIds, newIds);
+	const addIds = setMinus(newIds, oldIds);
+
+	for (const id of deleteIds) await rows.find((r) => +r['id_transakce'] === id)?.delete();
+	await transactionSheet.addRows(transactions.filter((t) => addIds.has(t.id_transakce)));
 };
 
 /**
@@ -131,8 +147,12 @@ export const newPurchase = async (
 ): Promise<{ vs: number; price: number }> => {
 	z.number().int().positive().parse(ticketCount);
 
-	const rows = await getPurchaseRows();
-	const usedSymbols = new Set(rows.map((r) => r.variabilni_symbol));
+	const [rows, transactionRows] = await Promise.all([getPurchaseRows(), getTransactionRows()]);
+
+	const usedSymbols = new Set([
+		...rows.map((r) => r.variabilni_symbol),
+		...transactionRows.map((t) => t.variabilni_symbol)
+	]);
 
 	const rowWithSameUuid = rows.find((row) => row.uuid === uuid);
 	if (rowWithSameUuid) {
@@ -165,7 +185,45 @@ export const newPurchase = async (
 
 export const matchTransactions = async (transactions: Transaction[]) => {
 	const purchaseRows = await getPurchaseRows();
-	const usedSymbols = new Set(purchaseRows.map((r) => r.variabilni_symbol));
+	const matchedTransactionIds = new Set(purchaseRows.map((r) => r.id_transakce));
+	
+	const usedTicketHashes = new Set(purchaseRows.flatMap(p => p.vstupenky_hash ?? []));
 
-	// TODO
+	// Find new matches
+
+	let unmatchedTransactions = transactions.filter(
+		(t) => !matchedTransactionIds.has(t.transactionId)
+	);
+	const newMatches: [Transaction, PurchaseEntry][] = unmatchedTransactions.flatMap((t) => {
+		if (t.currency !== 'CZK' || isNaN(t.variableSymbol)) return [];
+		const matchingPurchase = purchaseRows.find((p) => p.variabilni_symbol === t.variableSymbol);
+		if (!matchingPurchase) return [];
+		if (t.amount < matchingPurchase.cena) return [];
+
+		return [[t, matchingPurchase]];
+	});
+	for (const [t, p] of newMatches) {
+		const ticketHashes = generujNJmen(p.pocet_vstupenek, j => !usedTicketHashes.has(j));
+		await updatePurchaseRow({ uuid: p.uuid }, {
+			id_transakce: t.transactionId,
+			vstupenky_hash: ticketHashes,
+			zaplaceno: Date.now()
+		})
+	}
+	const newMatchIds = new Set(newMatches.map(([, p]) => p.uuid));
+
+	// Write down the currently unmatched transactions
+
+	unmatchedTransactions = unmatchedTransactions.filter((t) => !newMatches.find(([t2]) => t === t2));
+	const unmatchedTransEntries: TransactionEntry[] = unmatchedTransactions.map((t) => ({
+		id_transakce: t.transactionId,
+		timestamp: Date.now(),
+		castka: `${t.currency} ${t.amount.toFixed(2)}`,
+		variabilni_symbol: t.variableSymbol,
+		ucet: t.counterAccount.account,
+		jmeno: t.counterAccount.name
+	}));
+	updateTransactionRows(unmatchedTransEntries);
+
+	return newMatchIds;
 };
