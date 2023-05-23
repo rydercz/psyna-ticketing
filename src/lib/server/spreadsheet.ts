@@ -12,6 +12,7 @@ const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 await doc.useServiceAccountAuth(secrets.serviceAccountKey);
 await doc.loadInfo();
 const purchaseSheet = doc.sheetsByTitle['listky'];
+const usedTicketSheet = doc.sheetsByTitle['pouzite_listky'];
 const transactionSheet = doc.sheetsByTitle['neprirazene_transakce'];
 
 export interface UserInfo {
@@ -24,7 +25,6 @@ interface PurchaseEntry extends UserInfo {
 
 	vytvoreno: number;
 	zaplaceno?: number;
-	pouzito?: number;
 
 	cena: number;
 	pocet_vstupenek: number;
@@ -60,7 +60,6 @@ const getPurchaseRows = async (): Promise<PurchaseEntry[]> => {
 
 		vytvoreno: +r['vytvoreno'],
 		zaplaceno: toOptNum(r['zaplaceno']),
-		pouzito: toOptNum(r['pouzito']),
 
 		cena: +r['cena'],
 		pocet_vstupenek: +r['pocet_vstupenek'],
@@ -86,6 +85,30 @@ export const generateUuid = async () => {
 	} while (used.has(uuid));
 
 	return uuid;
+};
+
+const getUsedTickets = async (): Promise<Set<string>> => {
+	const rows = await usedTicketSheet.getRows();
+	return new Set(rows.map((r) => r['hash']));
+};
+
+const useTicket = async (hash: string) => {
+	await usedTicketSheet.addRow({ hash });
+};
+
+export const checkTickets = async (
+	hashes: string[]
+): Promise<[hash: string, validity: 'invalid' | 'valid' | 'used'][]> => {
+	const rows = await getPurchaseRows();
+	const usedTickets = await getUsedTickets();
+	const paidTickets = new Set(
+		rows.filter((r) => r.zaplaceno).flatMap((r) => r.vstupenky_hash ?? [])
+	);
+
+	return hashes.map((h) => [
+		h,
+		!paidTickets.has(h) ? 'invalid' : usedTickets.has(h) ? 'used' : 'valid'
+	]);
 };
 
 const addPurchaseRow = (entry: Readonly<PurchaseEntry>) =>
@@ -186,8 +209,8 @@ export const newPurchase = async (
 export const matchTransactions = async (transactions: Transaction[]) => {
 	const purchaseRows = await getPurchaseRows();
 	const matchedTransactionIds = new Set(purchaseRows.map((r) => r.id_transakce));
-	
-	const usedTicketHashes = new Set(purchaseRows.flatMap(p => p.vstupenky_hash ?? []));
+
+	const usedTicketHashes = new Set(purchaseRows.flatMap((p) => p.vstupenky_hash ?? []));
 
 	// Find new matches
 
@@ -203,12 +226,17 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 		return [[t, matchingPurchase]];
 	});
 	for (const [t, p] of newMatches) {
-		const ticketHashes = generujNJmen(p.pocet_vstupenek, j => !usedTicketHashes.has(j));
-		await updatePurchaseRow({ uuid: p.uuid }, {
-			id_transakce: t.transactionId,
-			vstupenky_hash: ticketHashes,
-			zaplaceno: Date.now()
-		})
+		const ticketHashes = generujNJmen(p.pocet_vstupenek, (j) => !usedTicketHashes.has(j));
+		ticketHashes.forEach((h) => usedTicketHashes.add(h));
+
+		await updatePurchaseRow(
+			{ uuid: p.uuid },
+			{
+				id_transakce: t.transactionId,
+				vstupenky_hash: ticketHashes,
+				zaplaceno: Date.now()
+			}
+		);
 	}
 	const newMatchIds = new Set(newMatches.map(([, p]) => p.uuid));
 

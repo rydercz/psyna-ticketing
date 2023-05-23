@@ -25,7 +25,7 @@ export const generateSymbol = (
 export const pickRandomItem = <T>(arr: T[]): T => {
 	if (arr.length === 0) throw new TypeError('Cannot pick item from empty array');
 	return arr[Math.floor(Math.random() * arr.length)];
-}
+};
 
 export const parseIban = (iban: string): string => {
 	iban = iban.replaceAll(/\s+/g, '').toUpperCase();
@@ -60,3 +60,6 @@ export const generatePaymentQR = ({
 
 export const setMinus = <T>(a: Set<T>, b: Set<T>): Set<T> =>
 	new Set([...a].filter((_) => !b.has(_)));
+
+export const generateTicketQR = (ticketHash: string) =>
+	toDataURL(`https://artyparty.csha.io/ticket/${ticketHash}`);

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { onMount } from "svelte";
 	import { updateTicket } from '$lib/client/tickets.ts';
 	import type { PageData } from './$types.d.ts';
 
@@ -9,6 +10,13 @@
 		const { uuid, vs } = data;
 		if (uuid && browser) updateTicket({ uuid, vs: String(vs) });
 	}
+
+	onMount(() => {
+		setTimeout(
+			() => location.reload(),
+			10_000
+		)
+	})
 </script>
 
 <h3>Instrukce pro platbu</h3>

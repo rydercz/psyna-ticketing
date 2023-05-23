@@ -1,6 +1,6 @@
 import * as z from 'zod';
 import { superValidate } from 'sveltekit-superforms/server';
-import type { PageServerLoad, Actions } from '../$types.js';
+import type { PageServerLoad, Actions } from './$types.d.ts';
 import { fail, redirect } from '@sveltejs/kit';
 import { generateUuid, newPurchase } from '$lib/server/spreadsheet.ts';
 import secrets from '$lib/server/secrets.ts';
