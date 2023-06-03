@@ -18,6 +18,14 @@ const secretsSchema = z.object({
 	iban: z.string(),
 	accountNumber: z.string(),
 	ticketPrice: z.number().gt(0),
+	mail: z.object({
+		host: z.string(),
+		auth: z.object({
+			user: z.string(),
+			pass: z.string()
+		})
+	}),
+	cronJobToken: z.string().uuid()
 });
 
 if (!process.env.secrets) throw Error('Please set the `secrets` env var.');

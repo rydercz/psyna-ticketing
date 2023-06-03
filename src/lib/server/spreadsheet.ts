@@ -7,6 +7,7 @@ import type { Transaction } from './bank.ts';
 import secrets from '$lib/server/secrets.ts';
 import { z } from 'zod';
 import { generujNJmen } from '$lib/jmena.ts';
+import { sendTicket } from './mail.ts';
 
 const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 await doc.useServiceAccountAuth(secrets.serviceAccountKey);
@@ -209,14 +210,16 @@ export const newPurchase = async (
 export const matchTransactions = async (transactions: Transaction[]) => {
 	const purchaseRows = await getPurchaseRows();
 	const matchedTransactionIds = new Set(purchaseRows.map((r) => r.id_transakce));
-
 	const usedTicketHashes = new Set(purchaseRows.flatMap((p) => p.vstupenky_hash ?? []));
+	const mailPromises: Promise<void>[] = [];
 
 	// Find new matches
 
 	let unmatchedTransactions = transactions.filter(
 		(t) => !matchedTransactionIds.has(t.transactionId)
 	);
+	console.log(`1/5 Found ${unmatchedTransactions.length} unmatched transactions.`);
+
 	const newMatches: [Transaction, PurchaseEntry][] = unmatchedTransactions.flatMap((t) => {
 		if (t.currency !== 'CZK' || isNaN(t.variableSymbol)) return [];
 		const matchingPurchase = purchaseRows.find((p) => p.variabilni_symbol === t.variableSymbol);
@@ -225,9 +228,16 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 
 		return [[t, matchingPurchase]];
 	});
+	const newMatchIds = new Set(newMatches.map(([, p]) => p.uuid));
+	console.log(`2/5 Found ${newMatches.length} new matches: ` + [...newMatchIds].join(', '));
+
 	for (const [t, p] of newMatches) {
 		const ticketHashes = generujNJmen(p.pocet_vstupenek, (j) => !usedTicketHashes.has(j));
 		ticketHashes.forEach((h) => usedTicketHashes.add(h));
+
+		// send ticket via mail
+		mailPromises.push(sendTicket(p.jmeno, p.email, ticketHashes));
+		console.log('Sending a mail');
 
 		await updatePurchaseRow(
 			{ uuid: p.uuid },
@@ -238,7 +248,7 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 			}
 		);
 	}
-	const newMatchIds = new Set(newMatches.map(([, p]) => p.uuid));
+	console.log(`3/5 Updated the table of purchases.`);
 
 	// Write down the currently unmatched transactions
 
@@ -251,7 +261,12 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 		ucet: t.counterAccount.account,
 		jmeno: t.counterAccount.name
 	}));
-	updateTransactionRows(unmatchedTransEntries);
+	await updateTransactionRows(unmatchedTransEntries);
+	console.log(`4/5 Updated the table of transactions.`);
+
+	// wait for mails
+	if (mailPromises.length > 0) await Promise.any(mailPromises);
+	console.log(`5/5 Sent ${mailPromises.length} e-mails.`);
 
 	return newMatchIds;
 };
