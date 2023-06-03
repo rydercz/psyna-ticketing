@@ -17,8 +17,11 @@ export async function sendTicket(name: string, address: string, hashes: string[]
 		'<h2>Děkujeme za zakoupení vstupenky!</h2>' +
 		hashes
 			.map(
-				(hash, i) =>
-					`<h3>Vstupenka č. ${i + 1}</h3><p>Kód: ${hash}</p><img alt="${hash}" src="cid:${cids[i]}">`
+				(hash, i) => `
+          <h3>Vstupenka č. ${i + 1}</h3>
+          <p>Kód: <a href="https://artyparty.csha.io/ticket/${hash}">${hash}</a></p>
+          <img alt="${hash}" src="cid:${cids[i]}">
+        `
 			)
 			.join('');
 

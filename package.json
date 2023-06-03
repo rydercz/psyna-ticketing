@@ -12,6 +12,8 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
+		"@fontsource-variable/roboto-flex": "^5.0.2",
+		"@fontsource/roboto": "^5.0.2",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",
 		"@types/google-spreadsheet": "^3.3.1",

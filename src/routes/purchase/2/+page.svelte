@@ -19,7 +19,7 @@
 	})
 </script>
 
-<h3>Instrukce pro platbu</h3>
+<h2>Instrukce pro platbu</h2>
 <p>
 	<img src={data.qr} alt="" />
 </p>
