@@ -218,7 +218,7 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 	let unmatchedTransactions = transactions.filter(
 		(t) => !matchedTransactionIds.has(t.transactionId)
 	);
-	console.log(`1/5 Found ${unmatchedTransactions.length} unmatched transactions.`);
+	console.log(`1/5 Found ${unmatchedTransactions.length} unmatched transactions from a total of ${transactions.length}.`);
 
 	const newMatches: [Transaction, PurchaseEntry][] = unmatchedTransactions.flatMap((t) => {
 		if (t.currency !== 'CZK' || isNaN(t.variableSymbol)) return [];
