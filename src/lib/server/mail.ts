@@ -33,7 +33,7 @@ export async function sendTicket(name: string, address: string, hashes: string[]
 			name: 'Artyparty Bot',
 			address: secrets.mail.address
 		},
-		to: 'm93a.cz@gmail.com',
+		to: { name, address },
 		subject: 'Vstupenka na Artyparty',
 		text,
 		html,
