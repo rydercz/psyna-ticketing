@@ -1,4 +1,4 @@
-import { format, parse } from 'date-fns';
+import { parse } from 'date-fns';
 import { delay } from '$lib/utils.ts';
 
 import secrets from '$lib/server/secrets.ts';
@@ -57,7 +57,7 @@ type BankTransaction = {
 
 export const fetchTransactions = async (retries = 5): Promise<Transaction[]> => {
 	const from = '2023-01-01';
-	const to = format(new Date(), 'yyyy-MM-dd');
+	const to = '2999-01-01';
 	const url = `https://www.fio.cz/ib_api/rest/periods/${secrets.bankToken}/${from}/${to}/transactions.json`;
 
 	try {
