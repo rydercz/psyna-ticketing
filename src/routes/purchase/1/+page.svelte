@@ -19,7 +19,7 @@
 		updateTicket({
 			uuid: $form.uuid,
 			name: $form.name,
-			email: $form.email,
+			email: $form.email
 		});
 	};
 </script>
@@ -64,13 +64,16 @@
 		<small>{$errors.ticketCount ?? ''}</small>
 	</label>
 	<span>
-    {$form.ticketCount * data.ticketPrice},– Kč
+		{$form.ticketCount * data.ticketPrice},– Kč
 		<button>Koupit!</button>
 	</span>
 </form>
 
+Na mail vám pošleme vstupenku a nic víc! Vaše údaje uchováme nejdéle do data konání akce.
+
 <style lang="scss">
-	label, span {
+	label,
+	span {
 		display: block;
 		padding: 0.1em;
 
@@ -79,7 +82,7 @@
 		}
 	}
 
-  span {
-    padding-top: .5em;
-  }
+	span {
+		padding-top: 0.5em;
+	}
 </style>
