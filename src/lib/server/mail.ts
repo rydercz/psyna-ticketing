@@ -31,7 +31,7 @@ export async function sendTicket(name: string, address: string, hashes: string[]
 	await transporter.sendMail({
 		from: {
 			name: 'Artyparty Bot',
-			address: secrets.mail.auth.user
+			address: secrets.mail.address
 		},
 		to: 'm93a.cz@gmail.com',
 		subject: 'Vstupenka na Artyparty',

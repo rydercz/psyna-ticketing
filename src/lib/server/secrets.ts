@@ -19,6 +19,7 @@ const secretsSchema = z.object({
 	accountNumber: z.string(),
 	ticketPrice: z.number().gt(0),
 	mail: z.object({
+		address: z.string().email(),
 		host: z.string(),
 		auth: z.object({
 			user: z.string(),
