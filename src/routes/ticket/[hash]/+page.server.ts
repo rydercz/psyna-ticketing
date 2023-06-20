@@ -3,14 +3,14 @@ import { generateTicketQR } from '$lib/utils.ts';
 import type { PageServerLoad } from './$types.d.ts';
 
 export const load = (async (event) => {
-	const uuid = event.url.searchParams.get('uuid');
-	const ticketHashes = await checkTickets(event.params.hash.split(','));
+	const uuid = event.url.searchParams.get('uuid') ?? '';
+	const ticketHashes = await checkTickets(uuid, event.params.hash.split(','));
 
 	const tickets = Promise.all(
 		ticketHashes.map(async ([hash, validity]) => ({
-			hash,
 			qr: await generateTicketQR(hash),
-			validity
+			validity,
+			hash
 		}))
 	);
 

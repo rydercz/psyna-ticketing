@@ -3,7 +3,7 @@ import secrets from '$lib/server/secrets.ts';
 import { generateTicketQR } from '$lib/utils.ts';
 import type { Attachment } from 'nodemailer/lib/mailer/';
 
-export async function sendTicket(name: string, address: string, hashes: string[]) {
+export async function sendTicket(name: string, address: string, uuid: string, hashes: string[]) {
 	const qrCodes = await Promise.all(hashes.map(generateTicketQR));
 	const cids = hashes.map(
 		(hash) => `${hash.replace('-', '')}${Math.floor(10_000 * Math.random())}@artyparty.csha.io`
@@ -19,7 +19,7 @@ export async function sendTicket(name: string, address: string, hashes: string[]
 			.map(
 				(hash, i) => `
           <h3>Vstupenka č. ${i + 1}</h3>
-          <p>Kód: <a href="https://artyparty.csha.io/ticket/${hash}">${hash}</a></p>
+          <p>Kód: <a href="https://artyparty.csha.io/ticket/${hash}?uuid=${uuid}">${hash}</a></p>
           <img alt="${hash}" src="cid:${cids[i]}">
         `
 			)

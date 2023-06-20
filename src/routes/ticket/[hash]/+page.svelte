@@ -29,3 +29,6 @@
 		<hr />
 	</div>
 {/each}
+<p>
+	<a href="/">Zpět na hlavní stránku.</a>
+</p>

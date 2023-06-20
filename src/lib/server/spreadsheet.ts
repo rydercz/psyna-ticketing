@@ -98,12 +98,16 @@ const useTicket = async (hash: string) => {
 };
 
 export const checkTickets = async (
+	uuid: string,
 	hashes: string[]
 ): Promise<[hash: string, validity: 'invalid' | 'valid' | 'used'][]> => {
 	const rows = await getPurchaseRows();
 	const usedTickets = await getUsedTickets();
 	const paidTickets = new Set(
-		rows.filter((r) => r.zaplaceno).flatMap((r) => r.vstupenky_hash ?? [])
+		rows
+			.filter((r) => r.uuid === uuid)
+			.filter((r) => r.zaplaceno)
+			.flatMap((r) => r.vstupenky_hash ?? [])
 	);
 
 	return hashes.map((h) => [
@@ -218,7 +222,9 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 	let unmatchedTransactions = transactions.filter(
 		(t) => !matchedTransactionIds.has(t.transactionId)
 	);
-	console.log(`1/5 Found ${unmatchedTransactions.length} unmatched transactions from a total of ${transactions.length}.`);
+	console.log(
+		`1/5 Found ${unmatchedTransactions.length} unmatched transactions from a total of ${transactions.length}.`
+	);
 
 	const newMatches: [Transaction, PurchaseEntry][] = unmatchedTransactions.flatMap((t) => {
 		if (t.currency !== 'CZK' || isNaN(t.variableSymbol)) return [];
@@ -236,7 +242,7 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 		ticketHashes.forEach((h) => usedTicketHashes.add(h));
 
 		// send ticket via mail
-		mailPromises.push(sendTicket(p.jmeno, p.email, ticketHashes));
+		mailPromises.push(sendTicket(p.jmeno, p.email, p.uuid, ticketHashes));
 		console.log('Sending a mail');
 
 		await updatePurchaseRow(

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount } from "svelte";
+	import { onMount } from 'svelte';
 	import { updateTicket } from '$lib/client/tickets.ts';
 	import type { PageData } from './$types.d.ts';
 
@@ -12,11 +12,8 @@
 	}
 
 	onMount(() => {
-		setTimeout(
-			() => location.reload(),
-			10_000
-		)
-	})
+		setTimeout(() => location.reload(), 10_000);
+	});
 </script>
 
 <h2>Instrukce pro platbu</h2>
@@ -37,6 +34,10 @@
 		<td>{data.vs}</td>
 	</tr>
 </table>
+<p>
+	(Pokud jste již zaplatili, prosím počkejte na této stránce. Ověření platby většinou trvá méně než
+	minutu.)
+</p>
 
 <style lang="scss">
 	.strong {
