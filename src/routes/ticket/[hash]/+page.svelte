@@ -21,6 +21,7 @@
 	};
 </script>
 
+<p>Děkujeme Vám za podporu!</p>
 {#each data.tickets as t}
 	<div>
 		<img alt={t.hash} src={t.qr} />

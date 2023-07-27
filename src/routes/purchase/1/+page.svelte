@@ -26,6 +26,7 @@
 
 <!-- <SuperDebug data={$form} /> -->
 
+<h1>Arty Party no. IV 2023 - předprodej vstupenek</h1>
 <form method="post" use:enhance on:submit={onSubmit}>
 	<input type="hidden" name="uuid" value={data.uuid} />
 	<label>
@@ -69,7 +70,20 @@
 	</span>
 </form>
 
-Na mail vám pošleme vstupenku a nic víc! Vaše údaje uchováme nejdéle do data konání akce.
+<p>
+	Po připsání platby na náš účet Vám na zadaný email Vám přijde elektronická vstupenka s QR kódem.
+	Při vstupu na akci jej zkontrolujeme. Veškerá vyplněná osobní data budeme shromažďovat pouze pro
+	účely ověření validity vstupenek a po akci budou smazána.
+</p>
+
+<p>
+	Odesláním souhlasíte s
+	<a
+		href="https://docs.google.com/document/d/1596Li0ZR5RlexEbuMNEqPA1z0nn6hZoEqC1L753MjWA/edit?usp=sharing"
+	>
+		obchodními podmínkami.
+	</a>
+</p>
 
 <style lang="scss">
 	label,

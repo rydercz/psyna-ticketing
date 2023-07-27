@@ -271,7 +271,7 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 	console.log(`4/5 Updated the table of transactions.`);
 
 	// wait for mails
-	if (mailPromises.length > 0) await Promise.any(mailPromises);
+	if (mailPromises.length > 0) await Promise.all(mailPromises);
 	console.log(`5/5 Sent ${mailPromises.length} e-mails.`);
 
 	return newMatchIds;

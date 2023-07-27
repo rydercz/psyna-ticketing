@@ -3,7 +3,7 @@
 	const tickets = getTickets();
 </script>
 
-<h1>Předprodej vstupenek</h1>
+<h1>Arty Party no. IV 2023 - předprodej vstupenek</h1>
 <p><a href="/purchase">Koupit vstupenku!</a></p>
 {#if tickets.length === 0}
 	<p>Na tomto zařízení nemáte uložené žádné vstupenky.</p>
