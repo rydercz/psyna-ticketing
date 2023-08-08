@@ -31,7 +31,7 @@ const adjektiva: Adjektivum[] = [
 	['ferovy', 'ferove', 'ferova'],
 	['feministicky', 'feministicke', 'feministicka'],
 	['hydraulicky', 'hydraulicke', 'hydraulicka'],
-	'investigativní',
+	'investigativni',
 	'interstelarni',
 	['jehlicnaty', 'jehlicnate', 'jehlicnata'],
 	'kapesni',

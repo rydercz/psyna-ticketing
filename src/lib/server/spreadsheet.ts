@@ -109,6 +109,9 @@ export const checkTickets = async (
 			.filter((r) => r.zaplaceno)
 			.flatMap((r) => r.vstupenky_hash ?? [])
 	);
+	console.log('all', ...rows);
+	console.log('used', ...usedTickets);
+	console.log('paid', ...paidTickets);
 
 	return hashes.map((h) => [
 		h,
