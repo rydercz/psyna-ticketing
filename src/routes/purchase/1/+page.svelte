@@ -80,6 +80,7 @@
 	Odesláním souhlasíte s
 	<a
 		href="https://docs.google.com/document/d/1596Li0ZR5RlexEbuMNEqPA1z0nn6hZoEqC1L753MjWA/edit?usp=sharing"
+		target="_blank"
 		>obchodními podmínkami</a
 	>.
 </p>
