@@ -51,7 +51,7 @@ Vaše ArtyParty Crew.`;
 			)
 			.join('') +
 		'<br/><br/>' +
-		instructions.replace('\n', '<br/>');
+		instructions.replaceAll('\n', '<br/>');
 
 	const transporter = createTransport({
 		...secrets.mail
