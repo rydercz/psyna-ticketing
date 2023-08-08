@@ -9,12 +9,15 @@ import { z } from 'zod';
 import { generujNJmen } from '$lib/jmena.ts';
 import { sendTicket } from './mail.ts';
 
-const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
-await doc.useServiceAccountAuth(secrets.serviceAccountKey);
-await doc.loadInfo();
-const purchaseSheet = doc.sheetsByTitle['listky'];
-const usedTicketSheet = doc.sheetsByTitle['pouzite_listky'];
-const transactionSheet = doc.sheetsByTitle['neprirazene_transakce'];
+const getSheets = async () => {
+	const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
+	await doc.useServiceAccountAuth(secrets.serviceAccountKey);
+	await doc.loadInfo();
+	const purchaseSheet = doc.sheetsByTitle['listky'];
+	const usedTicketSheet = doc.sheetsByTitle['pouzite_listky'];
+	const transactionSheet = doc.sheetsByTitle['neprirazene_transakce'];
+	return { purchaseSheet, usedTicketSheet, transactionSheet };
+};
 
 export interface UserInfo {
 	jmeno: string;
@@ -51,6 +54,7 @@ const toStrArr = (x: string | undefined) =>
 		.filter((s) => s !== '');
 
 const getPurchaseRows = async (): Promise<PurchaseEntry[]> => {
+	const { purchaseSheet } = await getSheets();
 	const rows = await purchaseSheet.getRows();
 	return rows.map((r) => ({
 		uuid: r['uuid'],
@@ -77,6 +81,7 @@ export const getPurchaseByUuid = async (uuid: string): Promise<PurchaseEntry | u
 };
 
 export const generateUuid = async () => {
+	const { purchaseSheet } = await getSheets();
 	const rows = await purchaseSheet.getRows();
 	const used = new Set(rows.map((r) => r['uuid']));
 
@@ -89,11 +94,13 @@ export const generateUuid = async () => {
 };
 
 const getUsedTickets = async (): Promise<Set<string>> => {
+	const { usedTicketSheet } = await getSheets();
 	const rows = await usedTicketSheet.getRows();
 	return new Set(rows.map((r) => r['hash']));
 };
 
 const useTicket = async (hash: string) => {
+	const { usedTicketSheet } = await getSheets();
 	await usedTicketSheet.addRow({ hash });
 };
 
@@ -109,9 +116,6 @@ export const checkTickets = async (
 			.filter((r) => r.zaplaceno)
 			.flatMap((r) => r.vstupenky_hash ?? [])
 	);
-	console.log('all', ...rows);
-	console.log('used', ...usedTickets);
-	console.log('paid', ...paidTickets);
 
 	return hashes.map((h) => [
 		h,
@@ -119,16 +123,19 @@ export const checkTickets = async (
 	]);
 };
 
-const addPurchaseRow = (entry: Readonly<PurchaseEntry>) =>
-	purchaseSheet.addRow({
+const addPurchaseRow = async (entry: Readonly<PurchaseEntry>) => {
+	const { purchaseSheet } = await getSheets();
+	await purchaseSheet.addRow({
 		...entry,
 		vstupenky_hash: entry.vstupenky_hash?.join(', ') ?? ''
 	});
+}
 
 const updatePurchaseRow = async (
 	which: Partial<Readonly<PurchaseEntry>>,
 	edit: Partial<Readonly<PurchaseEntry>>
 ) => {
+	const { purchaseSheet } = await getSheets();
 	const rows = await purchaseSheet.getRows();
 	const row = rows.find((r) =>
 		Object.entries(which).every(([key, value]) => r[key] === String(value))
@@ -143,6 +150,7 @@ const updatePurchaseRow = async (
 };
 
 const getTransactionRows = async (): Promise<TransactionEntry[]> => {
+	const { transactionSheet } = await getSheets();
 	const rows = await transactionSheet.getRows();
 	return rows.map((r) => ({
 		id_transakce: +r['id_transakce'],
@@ -155,6 +163,7 @@ const getTransactionRows = async (): Promise<TransactionEntry[]> => {
 };
 
 const updateTransactionRows = async (transactions: Readonly<TransactionEntry>[]) => {
+	const { transactionSheet } = await getSheets();
 	const rows = await transactionSheet.getRows();
 
 	const oldIds = new Set(rows.map((r) => +r['id_transakce']));
@@ -187,7 +196,6 @@ export const newPurchase = async (
 
 	const rowWithSameUuid = rows.find((row) => row.uuid === uuid);
 	if (rowWithSameUuid) {
-		console.log(uuid, rowWithSameUuid);
 		if (
 			user.jmeno === rowWithSameUuid.jmeno &&
 			user.adresa === rowWithSameUuid.adresa &&
