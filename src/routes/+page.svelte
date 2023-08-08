@@ -3,6 +3,9 @@
 	const tickets = getTickets();
 </script>
 
+<div class=logo>
+	<img src="/arty-logo.svg" alt="Artyparty" />
+</div>
 <h1>Arty Party no. IV 2023 - předprodej vstupenek</h1>
 <p><a href="/purchase">Koupit vstupenku!</a></p>
 {#if tickets.length === 0}
@@ -20,3 +23,17 @@
 		{/if}
 	{/each}
 {/if}
+
+<style lang="scss">
+	.logo {
+		display: flex;
+		justify-content: center;
+		
+		margin-top: -20px;
+		margin-bottom: 20px;
+
+		img {
+			height: 100px;
+		}
+	}
+</style>

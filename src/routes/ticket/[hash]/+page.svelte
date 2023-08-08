@@ -21,7 +21,7 @@
 	};
 </script>
 
-<p>Děkujeme Vám za podporu!</p>
+<p>Děkujeme Vám za podporu! Vstupenky jsme zaslali i na Váš mail!</p>
 {#each data.tickets as t}
 	<div>
 		<img alt={t.hash} src={t.qr} />
@@ -30,6 +30,3 @@
 		<hr />
 	</div>
 {/each}
-<p>
-	<a href="/">Zpět na hlavní stránku.</a>
-</p>

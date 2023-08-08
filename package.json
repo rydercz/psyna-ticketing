@@ -42,5 +42,10 @@
 		"vite": "^4.3.0",
 		"zod": "^3.21.4"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@fontsource/cutive-mono": "^5.0.8",
+		"@fortawesome/free-solid-svg-icons": "^6.4.2",
+		"svelte-fa": "^3.0.4"
+	}
 }
