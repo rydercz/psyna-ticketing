@@ -37,31 +37,48 @@ const adjektiva: Adjektivum[] = [
 	'kapesni',
 	['modrovlasy', 'modrovlase', 'modrovlasa'],
 	'nevokalni',
+	'neurodivergentnti',
 	'spektralni',
 	['senzomotoricky', 'senzomotoricke', 'senzomotoricka'],
+	['troufaly', 'troufale', 'troufala'],
 	['vychytraly', 'vychytrale', 'vychytrala']
 ];
 
 const substantiva: Substantivum[] = [
+	['agama', Rod.Zensky],
 	['alpaka', Rod.Zensky],
+	['anomalocaris', Rod.Muzsky],
+	['bodlin', Rod.Muzsky],
 	['jezura', Rod.Zensky],
 	['kapybara', Rod.Zensky],
 	['kakadu', Rod.Muzsky],
+	['kosatka', Rod.Zensky],
 	['kote', Rod.Stredni],
+	['krakatice', Rod.Zensky],
 	['lemur', Rod.Muzsky],
+	['lenochod', Rod.Muzsky],
+	['lodenka', Rod.Zensky],
 	['luskoun', Rod.Muzsky],
+	['mlok', Rod.Muzsky],
 	['myval', Rod.Muzsky],
+	['nosatec', Rod.Muzsky],
 	['okapi', Rod.Zensky],
+	['oknozubka', Rod.Zensky],
 	['plamenak', Rod.Muzsky],
 	['ptakopysk', Rod.Muzsky],
 	['rak', Rod.Muzsky],
 	['rypous', Rod.Muzsky],
+	['sakal', Rod.Muzsky],
 	['sele', Rod.Stredni],
+	['stegosaurus', Rod.Muzsky],
 	['surikata', Rod.Zensky],
 	['svinka', Rod.Zensky],
 	['tapir', Rod.Muzsky],
+	['tarbik', Rod.Muzsky],
 	['vacice', Rod.Zensky],
-	['vombat', Rod.Muzsky]
+	['vakovlk', Rod.Muzsky],
+	['vombat', Rod.Muzsky],
+	['zirafa', Rod.Zensky]
 ];
 
 export const generujJmeno = (validni = (jmeno: string) => true): string => {
