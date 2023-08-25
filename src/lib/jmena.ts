@@ -81,23 +81,30 @@ const substantiva: Substantivum[] = [
 	['zirafa', Rod.Zensky]
 ];
 
-export const generujJmeno = (validni = (jmeno: string) => true): string => {
+export const generujJmeno = (validni = (jmeno: string) => true, volne = false): string => {
 	const adj = pickRandomItem(adjektiva);
 	const subs = pickRandomItem(substantiva);
 	const rod = subs[1];
 
 	const adjTvar = Array.isArray(adj) ? adj[rod] : adj;
 
-	const jmeno = `${adjTvar}-${subs[0]}`;
+	let prefix = '';
+	if (volne) prefix = rod === Rod.Muzsky ? 'volny-' : rod === Rod.Zensky ? 'volna-' : 'volne-';
+
+	const jmeno = `${prefix}${adjTvar}-${subs[0]}`;
 	if (validni(jmeno)) return jmeno;
 
 	return generujJmeno(validni);
 };
 
-export const generujNJmen = (n: number, validni = (jmeno: string) => true): string[] => {
+export const generujNJmen = (
+	n: number,
+	validni = (jmeno: string) => true,
+	volne = false
+): string[] => {
 	const jmena: string[] = [];
 	for (let i = 0; i < n; i++) {
-		jmena.push(generujJmeno((j) => validni(j) && !jmena.includes(j)));
+		jmena.push(generujJmeno((j) => validni(j) && !jmena.includes(j), volne));
 	}
 	return jmena;
 };
