@@ -26,7 +26,8 @@ const secretsSchema = z.object({
 			pass: z.string()
 		})
 	}),
-	cronJobToken: z.string().uuid()
+	cronJobToken: z.string().uuid(),
+	ticketCheckToken: z.string().uuid()
 });
 
 if (!process.env.secrets) throw Error('Please set the `secrets` env var.');

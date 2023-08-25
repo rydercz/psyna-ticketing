@@ -99,10 +99,51 @@ const getUsedTickets = async (): Promise<Set<string>> => {
 	return new Set(rows.map((r) => r['hash']));
 };
 
-const useTicket = async (hash: string) => {
+interface UseTicketResult {
+	validity: 'invalid' | 'valid' | 'used';
+	name: string;
+	mail: string;
+	used: number;
+}
+export const useTicket = async (hash: string): Promise<UseTicketResult> => {
+	const row = (await getPurchaseRows()).find(({ vstupenky_hash }) =>
+		vstupenky_hash?.includes(hash)
+	);
+
+	if (!row)
+		return {
+			validity: 'invalid',
+			name: '',
+			mail: '',
+			used: -1
+		};
+	const { jmeno: name, email: mail } = row;
+
 	const { usedTicketSheet } = await getSheets();
-	await usedTicketSheet.addRow({ hash });
+	const usedRow = (await usedTicketSheet.getRows())
+		.map((r) => ({
+			hash: r['hash'],
+			used: +r['pouzito']
+		}))
+		.find((r) => r.hash === hash);
+
+	if (!usedRow) await usedTicketSheet.addRow({ hash, pouzito: Date.now() });
+
+	const validity = usedRow ? 'used' : 'valid';
+
+	return {
+		validity,
+		name,
+		mail,
+		used: usedRow?.used ?? -1
+	};
 };
+export const undoUseTicket = async (hash: string) => {
+	const { usedTicketSheet } = await getSheets();
+	const rows = await usedTicketSheet.getRows();
+	const row = rows.find(r => r['hash'] === hash);
+	row?.delete();
+}
 
 export const checkTickets = async (
 	uuid: string,
@@ -129,7 +170,7 @@ const addPurchaseRow = async (entry: Readonly<PurchaseEntry>) => {
 		...entry,
 		vstupenky_hash: entry.vstupenky_hash?.join(', ') ?? ''
 	});
-}
+};
 
 const updatePurchaseRow = async (
 	which: Partial<Readonly<PurchaseEntry>>,
