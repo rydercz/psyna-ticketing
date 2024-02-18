@@ -8,6 +8,9 @@
 </div>
 <div class="content">
 	<h1>Psyna 2024<br> předprodej vstupenek</h1>
+
+	<p>Prvních 100 vstupenek za 700 korun českých</p>
+
 	<p><a href="/purchase">Koupit vstupenku!</a></p>
 	<!--<p>Předprodej byl ukončen, nové lístky seženete už jen na místě.</p>-->
 	{#if tickets.length === 0}
