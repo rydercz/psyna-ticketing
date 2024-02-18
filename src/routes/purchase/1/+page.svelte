@@ -26,7 +26,7 @@
 
 <!-- <SuperDebug data={$form} /> -->
 
-<h1>Arty Party no. IV 2023 - předprodej vstupenek</h1>
+<h1>Psyna 2024<br> předprodej vstupenek</h1>
 <form method="post" use:enhance on:submit={onSubmit}>
 	<input type="hidden" name="uuid" value={data.uuid} />
 	<label>
@@ -79,7 +79,7 @@
 <p>
 	Odesláním souhlasíte s
 	<a
-		href="https://docs.google.com/document/d/1596Li0ZR5RlexEbuMNEqPA1z0nn6hZoEqC1L753MjWA/edit?usp=sharing"
+		href="https://docs.google.com/document/d/1Nmm5ro9GULDNmWlfxfcbjwRtkCUvBGA3YNzn08l7JsU/edit?usp=sharing"
 		target="_blank"
 		>obchodními podmínkami</a
 	>.

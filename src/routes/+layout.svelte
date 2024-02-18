@@ -29,7 +29,7 @@
 		justify-content: center;
 		align-items: center;
 
-		background: center / cover no-repeat url('/arty-bg.jpeg');
+		background: center / cover no-repeat url('/psyna-bg.jpg');
 	}
 
 	:global(body, input, button, a) {

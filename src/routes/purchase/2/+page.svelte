@@ -36,7 +36,7 @@
 </table>
 <p>
 	(Pokud jste již zaplatili, prosím počkejte na této stránce. Ověření platby většinou trvá méně než
-	minutu. V případě problémů s platbou nás kontaktujte na crew.artyparty@gmail.com)
+	minutu. V případě problémů s platbou nás kontaktujte na vstupenky@psyna.cz)
 </p>
 
 <style lang="scss">

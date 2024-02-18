@@ -81,17 +81,41 @@ const substantiva: Substantivum[] = [
 	['zirafa', Rod.Zensky]
 ];
 
-export const generujJmeno = (validni = (jmeno: string) => true, volne = false): string => {
-	const adj = pickRandomItem(adjektiva);
-	const subs = pickRandomItem(substantiva);
-	const rod = subs[1];
+// Array of adjectives for generating stoner band names
+const adjectives = [
+	"Dark", "Mysterious", "Psychedelic", "Lost", "Heavy",
+	"Ominous", "Crystal", "Desolate", "Cosmic", "Ancient",
+	"Eternal", "Fire", "Icy", "Stony", "Forgotten",
+	"Mystic", "Wild", "Noble", "Enigmatic", "Solid",
+	"Bloody", "Golden", "Magical", "Quiet", "Stormy",
+	"Torn", "Brave", "Shadowy", "Flaming", "Abyssal",
+	"Summit", "Green", "Dragon", "Iron", "Ghostly",
+	"Energetic", "Furious", "Buried", "Glowing", "Icy"
+];
 
-	const adjTvar = Array.isArray(adj) ? adj[rod] : adj;
+// Array of singular nouns for generating stoner band names
+const nouns = [
+	"Wolf", "Pilgrim", "Druid", "Phantom", "Horizon",
+	"Cosmos", "Echo", "Realm", "Vortex", "Titan",
+	"Scientist", "Flame", "King", "Mage", "Fairy",
+	"Demon", "Wind", "Rock", "Ocean", "Darkness",
+	"Beast", "Ghost", "Star", "Planet", "Knight",
+	"Garden", "Mountain", "River", "Forest", "Cave",
+	"Portal", "World", "Veil", "Castle", "Throne",
+	"Dream", "Sphere", "Path", "Story", "Legend"
+];
+
+
+export const generujJmeno = (validni = (jmeno: string) => true, volne = false): string => {
+
+	const first = pickRandomItem(adjectives);
+	const second = pickRandomItem(adjectives);
+	const noun = pickRandomItem(nouns);
 
 	let prefix = '';
-	if (volne) prefix = rod === Rod.Muzsky ? 'volny-' : rod === Rod.Zensky ? 'volna-' : 'volne-';
+	if (volne) prefix = 'free-';
 
-	const jmeno = `${prefix}${adjTvar}-${subs[0]}`;
+	const jmeno = `${prefix}${first}-${second}-${noun}`;
 	if (validni(jmeno)) return jmeno;
 
 	return generujJmeno(validni);
