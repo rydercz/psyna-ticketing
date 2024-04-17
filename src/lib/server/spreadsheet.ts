@@ -10,9 +10,15 @@ import { generujNJmen } from '$lib/jmena.ts';
 import { sendTicket } from './mail.ts';
 
 const getSheets = async () => {
+
+	console.log('try to get spreadsheet: ' + secrets.spreadsheetId);
+
 	const doc = new GoogleSpreadsheet(secrets.spreadsheetId);
 	await doc.useServiceAccountAuth(secrets.serviceAccountKey);
 	await doc.loadInfo();
+
+
+
 	const purchaseSheet = doc.sheetsByTitle['listky'];
 	const usedTicketSheet = doc.sheetsByTitle['pouzite_listky'];
 	const transactionSheet = doc.sheetsByTitle['neprirazene_transakce'];

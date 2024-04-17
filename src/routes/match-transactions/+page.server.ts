@@ -9,7 +9,13 @@ export const load = (async (event) => {
 		throw error(403);
 	}
 
+	console.log('start to fetch transaction from bank...');
+
 	const transactions = await fetchTransactions();
+
+
+	console.log('fetch from bank complete.');
+
 	const newMatches = await matchTransactions(transactions);
 	return { matches: [...newMatches] };
 }) satisfies PageServerLoad;

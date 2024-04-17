@@ -72,12 +72,14 @@ export const fetchTransactions = async (retries = 5): Promise<Transaction[]> => 
 			variableSymbol: +data[Col.variableSymbol]?.value,
 
 			counterAccount: {
-				account: `${data[Col.counterAccount].value}/${data[Col.counterBankCode].value}`,
+				account: data[Col.counterBankCode] ?
+					`${data[Col.counterAccount].value}/${data[Col.counterBankCode].value}`
+					: data[Col.counterAccount].value,
 				name: '' + data[Col.counterAccountName].value
 			}
 		}));
 	} catch (e) {
-		console.log(e);
+		console.log('failed to fetch history from bank: ', e);
 		if (retries <= 0) throw e;
 		// wait for 1s, 2s, 3.5s, 10s, 50s before trying again
 		// maximum wait time before failing is ~1 min
