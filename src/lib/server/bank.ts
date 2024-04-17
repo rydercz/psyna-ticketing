@@ -56,8 +56,8 @@ type BankTransaction = {
 };
 
 export const fetchTransactions = async (retries = 5): Promise<Transaction[]> => {
-	const from = '2024-02-18';
-	const to = '2999-01-01';
+	const from = '2024-04-01';
+	const to = '2024-08-01';
 	const url = `https://www.fio.cz/ib_api/rest/periods/${secrets.bankToken}/${from}/${to}/transactions.json`;
 
 	try {
@@ -77,6 +77,7 @@ export const fetchTransactions = async (retries = 5): Promise<Transaction[]> => 
 			}
 		}));
 	} catch (e) {
+		console.log(e);
 		if (retries <= 0) throw e;
 		// wait for 1s, 2s, 3.5s, 10s, 50s before trying again
 		// maximum wait time before failing is ~1 min
