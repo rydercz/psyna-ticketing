@@ -288,7 +288,10 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 		if (t.currency !== 'CZK' || isNaN(t.variableSymbol)) return [];
 		const matchingPurchase = purchaseRows.find((p) => p.variabilni_symbol === t.variableSymbol);
 		if (!matchingPurchase) return [];
-		if (t.amount < matchingPurchase.cena) return [];
+
+		const amount = t.convertedFromEur ? t.amount * 1.05 : t.amount;
+
+		if (amount < matchingPurchase.cena) return [];
 
 		return [[t, matchingPurchase]];
 	});

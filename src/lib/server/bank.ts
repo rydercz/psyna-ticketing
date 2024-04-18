@@ -29,6 +29,8 @@ enum Col {
 	currency = 'column14',
 	variableSymbol = 'column5',
 
+	note = 'column18',
+
 	counterAccount = 'column2',
 	counterBankCode = 'column3',
 	counterAccountName = 'column10'
@@ -40,6 +42,7 @@ export interface Transaction {
 	amount: number;
 	currency: string;
 	variableSymbol: number;
+	convertedFromEur: boolean;
 
 	counterAccount: {
 		account: string;
@@ -70,11 +73,12 @@ export const fetchTransactions = async (retries = 5): Promise<Transaction[]> => 
 			amount: +data[Col.amount].value,
 			currency: '' + data[Col.currency].value,
 			variableSymbol: +data[Col.variableSymbol]?.value,
+			convertedFromEur: ('' + data[Col.note]?.value).includes('EUR'),
 
 			counterAccount: {
 				account: data[Col.counterBankCode] ?
 					`${data[Col.counterAccount].value}/${data[Col.counterBankCode].value}`
-					: data[Col.counterAccount].value,
+					: String(data[Col.counterAccount].value),
 				name: '' + data[Col.counterAccountName].value
 			}
 		}));

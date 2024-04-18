@@ -26,7 +26,9 @@ export const load = (async (event) => {
 	return {
 		uuid,
 		accountNumber: secrets.accountNumber,
+		iban: secrets.iban,
 		amount,
+		amountEur: Math.floor(amount / 24),
 		qr,
 		vs
 	};

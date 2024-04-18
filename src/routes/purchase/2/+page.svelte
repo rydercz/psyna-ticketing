@@ -22,7 +22,7 @@
 </p>
 <table>
 	<tr>
-		<td class="strong">Číslo účtu:</td>
+		<td class="strong" style="width: 50%;">Číslo účtu:</td>
 		<td>{data.accountNumber}</td>
 	</tr>
 	<tr>
@@ -33,10 +33,26 @@
 		<td class="strong">Variabilní symbol:</td>
 		<td>{data.vs}</td>
 	</tr>
+	<tr>
+		<td colspan="2"><hr/></td>
+	</tr>
+	<tr>
+		<td class="strong">IBAN:</td>
+		<td>{data.iban}</td>
+	</tr>
+	<tr>
+		<td class="strong">Amount:</td>
+		<td>{data.amountEur?.toFixed(0)} EUR</td>
+	</tr>
+	<tr>
+		<td class="strong">Reference:</td>
+		<td>{data.vs}</td>
+	</tr>
 </table>
+
 <p>
 	(Pokud jste již zaplatili, prosím počkejte na této stránce. Ověření platby většinou trvá méně než
-	minutu. V případě problémů s platbou nás kontaktujte na vstupenky@psyna.cz)
+	minutu. V případě problémů s platbou nás kontaktujte na <a href="mailto:vstupenky@psyna.cz">vstupenky@psyna.cz</a>)
 </p>
 
 <style lang="scss">
