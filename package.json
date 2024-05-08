@@ -46,6 +46,7 @@
 	"dependencies": {
 		"@fontsource/cutive-mono": "^5.0.8",
 		"@fortawesome/free-solid-svg-icons": "^6.4.2",
+		"@vercel/analytics": "^1.2.2",
 		"qr-svelte": "^0.0.3",
 		"svelte-fa": "^3.0.4"
 	}

@@ -1,7 +1,10 @@
 <script lang="ts">
 	import '@fontsource/cutive-mono';
+	import { inject } from '@vercel/analytics'
 	import { page } from '$app/stores';
 	import Back from '$lib/Back.svelte';
+
+	inject();
 
 	$: isRoot = $page.route.id === '/';
 </script>
