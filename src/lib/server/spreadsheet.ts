@@ -291,7 +291,8 @@ export const matchTransactions = async (transactions: Transaction[]) => {
 
 		const amount = t.convertedFromEur ? t.amount * 1.05 : t.amount;
 
-		if (amount < matchingPurchase.cena) return [];
+		// small offset
+		if ((amount + 5) < matchingPurchase.cena) return [];
 
 		return [[t, matchingPurchase]];
 	});
