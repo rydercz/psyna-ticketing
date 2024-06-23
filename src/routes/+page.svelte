@@ -9,7 +9,8 @@
 <div class="content">
 	<h1>Psyna 2024<br> předprodej vstupenek</h1>
 
-	<p>Aktuálně v prodeji druhá vlna 200 vstupenek<br> za 850 korun českých</p>
+	<p>Aktuálně v prodeji poslední vlna vstupenek<br> za 1000 korun českých.</p>
+	<p>Předprodej končí 5.7.2024.<br>Vstup na místě bude za 1250 korun českých.</p>
 
 	<p><a href="/purchase">Koupit vstupenku!</a></p>
 	<!--<p>Předprodej byl ukončen, nové lístky seženete už jen na místě.</p>-->
