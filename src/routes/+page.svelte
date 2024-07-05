@@ -21,6 +21,10 @@
 
 	<hr>
 
+	V případě problémů s platbou nás kontaktujte na <a href="mailto:vstupenky@psyna.cz">vstupenky@psyna.cz</a>
+
+	<hr>
+
 	{#if tickets.length === 0}
 		<p>Na tomto zařízení nemáte uložené žádné vstupenky.</p>
 	{:else}
