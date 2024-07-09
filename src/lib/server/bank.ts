@@ -30,6 +30,7 @@ enum Col {
 	variableSymbol = 'column5',
 	reference = 'column27',
 
+	message = 'column16',
 	note = 'column18',
 
 	counterAccount = 'column2',
@@ -73,7 +74,7 @@ export const fetchTransactions = async (retries = 5): Promise<Transaction[]> => 
 			date: parse(String(data[Col.date].value).slice(0, 10), 'yyyy-MM-dd', new Date()),
 			amount: +data[Col.amount].value,
 			currency: '' + data[Col.currency].value,
-			variableSymbol: +(data[Col.variableSymbol]?.value ?? data[Col.reference]?.value),
+			variableSymbol: +(data[Col.variableSymbol]?.value ?? data[Col.message]?.value ?? data[Col.reference]?.value),
 			convertedFromEur: ('' + data[Col.note]?.value).includes('EUR'),
 
 			counterAccount: {
